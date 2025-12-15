@@ -1,57 +1,168 @@
-# Semi-honest Multi party payjoins -- devnotes
+# Semi-honest Multi-Party Payjoins -- dev notes
 
-In the semi honest case safetey is always garunteed by virtue of peers not signing a final tx which does not satisfy their payment intents.
-If peers decide to ommit txs or deviate from the protocol we have not way to blaming them or exluding them -- hence semihonest. We also cannot protect against equivocations. An equivocation here means a peer re-uses a reissuance token or oppurtunity to re-commit to a new set of outputs. In the semi honest setting we assume peers are economically motivated to finish the tx and known they are entities. 
+## Threat model (what we assume)
 
-## Changes to the directory
+In the semi-honest setting, safety is basically free: no one will sign a final transaction that violates their payment intent. If the final unsigned tx doesn't pay me correctly, I just don't sign.
 
-Peers will rely on best-effort broadcast to progress the protocol. Meaning we are not sure if other peers have read our messages withing some time window.
-The bip77 directory therfore needs to be upgraded to support append-only semantics as oppose to write and replace.
+What we don't get in this model:
 
-Peers in the multi-party payjoin will all use the mailbox. 
+* No way to blame or exclude peers who stall, omit messages, or quietly drop out
+* No protection against equivocation
+
+By equivocation here, we mean stuff like:
+
+* Re-using a reissuance token
+* Re-committing to a different set of outputs after previously committing
+
+We assume peers are:
+
+* Economically motivated to finish the transaction
+* Known entities (not fully anonymous adversaries)
+  So we lean on incentives rather than cryptographic enforcement.
+
+## Directory changes
+
+The protocol progresses via best-effort broadcast. There's no guarantee that other peers have seen your message within any bounded time window.
+
+Because of that, the BIP77 directory needs to change:
+
+* It should be append-only, not write-and-replace
+* Messages become an event log rather than mutable state
+
+All peers in a multi-party payjoin share the same mailbox.
 
 ## Authenticated communication
 
-## Phases
+(Still under-specified.)
 
-Once peers have a established a mailbox and shared secret we can start exchanging messages.
-Peers will register their outputs, then their outputs. If a advesary has learned about the shared secret they can contribute outputs and if the fee contributions workout they may be able to get away with it. This can be mitigated by using BIP322 proofs. And homomorphic values to ensure output integrity (not spending more than what is being contributed).
-However, if we want to use KVACs in a distributed settings that would complicate things and we would need to use something like coconut credentials for threshold issuance. 
+Once peers are in the same mailbox, all messages need:
 
-Safety, again, is enforced by each peer checking that the final unsigned tx contains all outputs they registed.
+* Sender authentication
+* Confidentiality against outsiders
+* Replay protection
 
-How do we know if we have uninamity on the unsigned final tx before contributing ?
-Assuming we know all the identity public keys in the peer list (the ring) peers can contribute and ACK on the final tx.
+This can be done with a shared secret or something MLS-like.
 
-## CRDT
+## Phases / protocol flow
 
-Transaction fragments in this protocol can be contributed and collected in any order. Order can be established by hashing event log on the directory and using that as a deterministic seed for shuffling. 
+Once peers have:
 
+* A mailbox
+* A shared secret
+
+They can start exchanging messages.
+
+### Group formation
+
+One option:
+
+* The first peer creates a group secret and shares it with invitees
+
+Another option:
+
+* Use something like MLS
+
+Open question:
+
+* How do we know the group size is fixed?
+* Do we require explicit membership closure before progressing?
+
+### Input / output contribution
+
+Peers register:
+
+1. Inputs
+2. Outputs
+
+Attack surface:
+
+* If an adversary learns the shared secret, they could inject outputs
+* If fees line up, they might get away with it
+
+Mitigations:
+
+* Use BIP-322 proofs to bind inputs to identities
+* Use homomorphic value commitments so peers can't spend more than they contribute
+
+Going further:
+
+* If we want KVAC-style guarantees in a distributed setting, things get hairy
+* Threshold issuance would likely require something like Coconut credentials
+
+### Safety checks
+
+Safety still comes from local verification:
+
+* Each peer checks the final unsigned tx includes *all* outputs they registered
+* Peers agree on global tx parameters ahead of time:
+
+  * feerate
+  * nSequence
+  * locktime, etc.
+
+If anything is off, peers just refuse to sign.
+
+### Unanimity on the final unsigned tx
+
+Open question:
+
+* How do we know everyone agrees on the same unsigned tx before signing?
+
+One idea:
+
+* We already know all identity public keys (the ring)
+* Peers use a linkable ring sign and ACK the final tx hash
+
+Optimization:
+
+* The ACK could be the signature itself over the sigash
+* That avoids an extra round of communication
+
+## CRDT / state model
+
+Transaction fragments can arrive in any order:
+
+* Inputs
+* Outputs
+* Reissuances
+* Param declarations
+
+This naturally forms a monotonic, mergeable state:
+
+* Essentially a CRDT
+
+Final ordering:
+
+* Hash the directory event log
+* Use that hash as a deterministic seed
+* Shuffle inputs/outputs deterministically before signing
+
+This gives everyone the same canonical transaction without extra coordination.
 
 ### Notes / Brain dump from convos with nothingmuch
 
 Notes here describe a system which allows peers to use discrepate directories but allows them to effeciently sync.
 
-We can either appoint a single leader or just rely on **best-effort broadcast** to signal progress.
+We can either appoint a single leader or just rely on best-effort broadcast to signal progress.
 
-I think it’s cleaner to structure everything around **best-effort broadcast** and treat the directory as providing an **efficient, encrypted broadcast-channel abstraction**. The directory doesn’t need to impose strong semantics; it just needs to move sets of messages around efficiently.
+I think it's cleaner to structure everything around best-effort broadcast and treat the directory as providing an efficient, encrypted broadcast-channel abstraction. The directory doesn't need to impose strong semantics; it just needs to move sets of messages around efficiently.
 
 Longer term, we can start from a simple shared secret for the semi-honest case and later upgrade this to something like MLS once we want stronger group membership and key rotation guarantees.
 
-On the messaging side, if the directory natively supports **rateless set reconciliation**, then clients can use **multiple directories simultaneously** to broadcast and sync messages for a single session — even if those directories only partially overlap in content.
+On the messaging side, if the directory natively supports rateless set reconciliation, then clients can use multiple directories simultaneously to broadcast and sync messages for a single session — even if those directories only partially overlap in content.
 
 The directories could either:
 
-* be completely **oblivious** to this multiplexing, or
-* actively **sync sets between each other**.
+* be completely oblivious to this multiplexing, or
+* actively sync sets between each other.
 
 Either way works.
 
-The main reason this design feels right is **mobile friendliness**.
+The main reason this design feels right is mobile friendliness.
 
 You wake up, immediately connect to *all* the directories you know about, and start downloading data in parallel for the topics you care about. Bandwidth naturally aggregates across directories, letting you recover the full message set quickly.
-IBLTs are efficient enough that decoding isn’t a big problem, and something like **minisketch with a shared key** would also work well.
+IBLTs are efficient enough that decoding isn't a big problem, and something like minisketch with a shared key would also work well.
 
-As quickly as possible, you reconstruct the **complete message set**, which includes blocks. From there, you compute **DAG-based “leader” blocks locally**, and then derive a height-indexed set that represents the **union of all messages that leader block has seen**.
+As quickly as possible, you reconstruct the complete message set, which includes blocks. From there, you compute DAG-based "leader" blocks locally, and then derive a height-indexed set that represents the union of all messages that leader block has seen.
 
-Toward the end of a phase, the set of known messages should converge with the set of **acked / voted messages** referenced by the leader block.
+Toward the end of a phase, the set of known messages should converge with the set of acked / voted messages referenced by the leader block.

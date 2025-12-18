@@ -79,3 +79,23 @@ A naïve approach would be:
 But this doesn’t work. Correct nodes may see completed broadcasts at different times and in different orders. If nodes propose `0` too early, they can prevent agreement.
 
 Instead, nodes must delay proposing `0` until they are sure the final vector will contain at least `N − f` ones. 
+
+
+## On dynamic participation
+
+In the permissionless model there may be no exact upper bound on the number of participants in a Byzantine agreement protocol. Unknown participants (UP) broadcast model provides a tight worst-case round complexity. One key assumption here is that parties have point-to-point channels with a shared common clock -- i.e synchornous rounds.
+
+Consensus cannot be achieved if the number of non-honest nodes is > n/2.  So, the question is what is the best form of agreement on honest parties inputs that can be achieved even if t > n/2. Specifically, honest parties can output the same n-tuple values from every party. This is called interactive consistency(IC). IC is valid if every honest party has the same i-th value of the output tuple of all other honest party. And it terminates in some a-priori round R.
+
+tldr; IC allows for all honest nodes to agree on per-node inputs despite of byzantine behavior. IC can be reduced to multiple instances of BA (one per sender).
+
+### Tangent: Original Dolev-Strong Protocol
+Unlike Lamport's original IC algorithm (which signs recursively), DS collects honest signatures on protocol values. Note that DS is solving IC for a single sender instance. In that sense its closer to a signed RBC or PBFT.
+In round 1 a designated sender signs and multicasts their input. In subsequent rounds parties that collect messages with valid signatures, add their own and re-broadcast. If after f+1 rounds you have values with f+1 valid signatures then decide v. This works because honest nodes only sign one value and do not equivocate. i.e two conflicting values cannot have f+1 honest signatures.
+
+This is a form of quorum certificate (r sigs on some value are sufficient to convince any party to accept b in round r) 
+
+### UP-setting
+
+In this setting the number and public keys of the protocol participants is unknown. In this setting we assume parties can communicate via a diffusion network ( sync network where messages send at some round r will be delivered r+1). Note that dolev-strong agreement variants require a known membership list in order to have a valid "quorum". In UP parties have to dynamically agree on the set of active parties, s.t ceritificates are signed by the parties in that active set. 
+

@@ -99,3 +99,19 @@ This is a form of quorum certificate (r sigs on some value are sufficient to con
 
 In this setting the number and public keys of the protocol participants is unknown. In this setting we assume parties can communicate via a diffusion network ( sync network where messages send at some round r will be delivered r+1). Note that dolev-strong agreement variants require a known membership list in order to have a valid "quorum". In UP parties have to dynamically agree on the set of active parties, s.t ceritificates are signed by the parties in that active set. 
 
+
+## On Dag-rider Consensus
+
+Operates in the async. network model. Using a threshold-based coin implementation. Reminder that async algos typically use randomness to achieve consistency. Where byzantine nodes have a harder time distrupting protocol flow because they cannot predict with full certaintity how nodes will behave.
+
+Consists of two phases:
+1. Communication layer where peers reliably broadcast that help them form a DAG of the messages they delivered.
+2. Ordering layer. No extra communication. Peers will locally order dfelivered messages in their local DAG.
+
+Reliable broadcast: Ensures that if a honest node broadcasts a message m, all other honest nodes will eventually see m -- given that an adaptive advesary can indefintely delay message arrival. 
+
+Global perfect coin: an unpredictable yet fair element which chooses the leader of the protocol. One way to implement this is by using a PKI and threshold-signatures.
+
+Each DAG is an abstraction for reliable broadcast message from other peers process. Each vertex is a message and it refrences to previously broadcasted verticies. Those refrence are the edges. Reliable broadcase ensure that eventually all peers end up with consistent view of a DAG. Each protocol round has a set of vertices associated with it (?). Each round has at most n verticies with a different source (peer). There are strong edges with (2f + 1) and weak edges (f) (?). 
+
+Intuitively each vertext from some round is strongly accepted if the next round has 3f + 1 outgoing edges that point to it. Implicitly encoding voting in the DAG structre. 

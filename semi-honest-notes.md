@@ -93,7 +93,7 @@ Going further:
 
 Safety still comes from local verification:
 
-* Each peer checks the final unsigned tx includes *all* outputs they registered
+* Each peer checks the final unsigned tx includes all outputs they registered
 * Peers agree on global tx parameters ahead of time:
 
   * feerate
@@ -101,6 +101,15 @@ Safety still comes from local verification:
   * locktime, etc.
 
 If anything is off, peers just refuse to sign.
+Who ever is creating the sk also proposes the global tx params.
+
+one approach here is do this with the directory
+* Include dir uri
+* Sender can do OHTTP GET to get payment instructions
+* Post quantum hpke with no minimal overhead 
+
+
+In the honest/semi-honest setting if the protocol fails you just need to restart.
 
 ### Unanimity on the final unsigned tx
 
@@ -112,6 +121,7 @@ One idea:
 
 * We already know all identity public keys (the ring)
 * Peers use a linkable ring sign and ACK the final tx hash
+  - This would be overkill for honest/semi-honest setting. Ack / ready to sign message can be broadcasted confedentially and once you have N of those you know when to sign.
 
 Optimization:
 

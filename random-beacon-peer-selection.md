@@ -31,8 +31,15 @@ The ability to link transactions over time can still break / reduce anonymity.
 
 ## Expander Graphs
 
-TODO: How this relates to expander graphs.
-	
+An expander graph is a sparse graph that is nevertheless extremely well connected. Formally, it has bounded degree, but any reasonably sized set of vertices has many edges leaving it. They look like complete graphs but have far few edges.
+
+There are several equivalent ways to define expansion. One is edge expansion: for any set of vertices  S that is not too large, the number of edges from 
+S to its complement is proportional to  ∣𝑆∣ . Another is spectral expansion, which characterizes expansion via the eigenvalues of the graph’s adjacency or transition matrix. These definitions all capture the same intuition: the graph rapidly mixes information.
+
+A random walk (where each step is taken uniformally at random) on an expander will spread out. In an expander graph, the distribution of a random walk’s position converges quickly to the stationary distribution (which is uniform if the graph is regular). After a few steps the graphs initial position is independent from its starting position.
+
+
+Superconcentrators are directed, acyclic, and focus on worst-case routing garuntees.
 
 ## Random Asyclic Graphs
 
@@ -44,4 +51,44 @@ This paper constructs such graphs within reasonable computational bounds. We pai
 i.e for all verticies match an outgoing stub with a in going stub at random. Which runs in propotial to the number of edges.
 
 This can be analyzed as a case of preferential attachment style network (albert-barbasi) -- i.e perferencial attachment is it self a random acyclic graph when degree ordering is fixed.
+
+
+## CoinJoin denominations
+
+def: hamming weight -> non-zero digits in a base. ex 00110, in base2 it would be the popcount = 2.
+
+Small hamming weight numbers (across different bases) result in denomination sets with high multiplicities. Mauers work demonstrates that denomination sets with high multiplicity results in a factorial number of input-output pairings. 
+
+Any arb satoshi amounts can be represented by using a set of these denominations.
+Dense sets of denominations lead to many sets of possible subset sums (i.e sub-transaction mappings). i.e subset sum density.
+**Dense ≈ less constrained ≈ more possible mappings ≈ bigger anonymity.**
+
+Multiple bases may be preferencial (base-2 + base-3 + base-10?). Odd values in some bases can be repr in other bases.
+Empirical work demonstrates that nearly all comboniations can be covered with 3-4 denominations in the set. 
+
+
+## Towards measuring tracebility notes
+
+tracebility: the measure of uncertainty an advesary has on the origin of some coins. Subjective traceability allows for a measurement to be influced by external knowledge. 
+
+Whats on the chain is just objectective traceability.
+
+This paper aims to create a formal framework to extract privacy metrics from any transaction graph.
+source nodes: mint coins into existence (coinbase)
+sink nodes: do not spend coins they receive. 
+
+To trace the origin of a source node we reverse the graph. The reveresed graph is then markov chain of with probabilites describing if an output is related to an input. Then perform a random walk to obtain a traceability score. The random walk is finished once a absorbed node is encountered (i.e a self-loop).
+
+Probability score are created proportional to the transfered amounts. however they can be influnced by any arb transaction metric. 
+
+An uncertainty score is then the amount of information an advesary lacks to obtain a total certaintly in the origin of the money. this can be modeled as the shannon entropy of the probability distribution / scores (denoted in the paper as B_i)
+
+Intuitively this is the uncertaintly score about the origin of a source node given a set of sink nodes.
+
+
+
+
+
+
+
  

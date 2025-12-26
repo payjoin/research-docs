@@ -44,6 +44,12 @@ We want to measure the quality of transaction construction protocols (coinjoins 
 
 Lastly, latest work in Coinjoins only quantify privacy for a single transaction and does not consider the transaction (sub)-graph however latest work intersection attacks demonstrates how pre and post mix activity can degrade privacy (generally intersection attacks Goldfeather et al).
 
+## Notes on Tx Graph structure
+
+The research direction is to treat on-chain privacy as an emergent property of **transaction-graph structure**, rather than as a per-transaction heuristic, and to analyze that structure using tools from random graphs, expanders, superconcentrators, and random walks. Dense transaction construction (e.g. radix CoinJoins) provides strong *local* ambiguity, while verifiable randomness in peer and coin selection induces *global* graph properties that drive rapid mixing and many plausible paths. Entropy captures the size of anonymity sets, but edge-differential-privacy–style parameters capture their **robustness** to information revelation; the open problem is interpreting these parameters meaningfully when the algorithm and data are fixed and ( \varepsilon ) must be estimated rather than chosen. Key open questions include how fragile large anonymity sets are under realistic edge deletions, how degree sequences evolve over time in the randomized subgraph, and how much information leaks through revealed preferences. Simulations can cover most of the empirical work: generating transaction graphs under different randomized selection rules, estimating degree distributions and path counts, measuring mixing times and stationary distributions, stress-testing edge removals and deanonymization events, and validating whether the resulting graphs behave like expanders or superconcentrators with high probability.
+
+
+
 ## Tangential Research
 
 Light clients and privacy preserving reads from electrum clients.

@@ -46,11 +46,11 @@ $R_1 = s * G - e * A_r$
 $R_2 = s * B_{scan} - e * C_r$
 
 $$
-R_1' = s*G - e* A_r = (k+e*a_r)*G - e*A_r = k*G + e * (a_r * G) - e * A_r = k*G
+R_1' = sG - eA_{r} = (k + e a_{r}) G - e A_{r} = k G + e (a_{r} G) - e A_{r} = k G
 $$
 
 $$
-R_2' = s*B_{scan} - e*C_r = (k+e*a_r)*B_{scan} - e*C_r = k*B_{scan} + e * (a_r * B_{scan}) - e * C_r = k*B_{scan}
+R_2' = sB_{scan} - eC_r = (k+ea_r)B_{scan} - eC_r = kB_{scan} + e (a_r B_{scan}) - e C_r = kB_{scan}
 $$
 
 $e' = H(R_1' || R_2') = e$

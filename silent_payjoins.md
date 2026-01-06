@@ -1,7 +1,7 @@
 
 # Silent payments tweaked key and BIP-77 Payjoins
 
-Goal: provide methematical intuition for collaboratively creating silent payments outputs for BIP-77 Payjoins.
+Goal: provide methematical intuition for collaboratively creating silent payments outputs for BIP-77 Payjoins and multi-party payjoins.
 
 For now lets assume the recv produces a static payjoin URI including their scan key.
 The sender creates the fallback tx with a change output and a standard [BIP 352](https://bips.dev/352/) payment output. Where S is the ECDH shared secret between the sender's public keys and the recv's scan pk.
@@ -16,6 +16,9 @@ The receiver sends the signs and sends the finalized proposal to the sender alon
 
 // TODO: the sender also needs to send $C_s$ and a corresponding DLEQ proof for the receiver to re-calulate $S$. Because the tweaks commit to input ordering this may not after the receiver contributes their inputs.
 
+// TODO; remove *
+// TODO: use \prime instead of '
+
 The sender will verify the DLEQ proof and re-calculate the shared secret $S$ and the tweaked key $P'$. Again $S = a_{tot} * B_{scan} = A_{tot} * b_{scan}$.
 
 $$
@@ -24,7 +27,7 @@ $$
 
 ## DLEQ proof
 
-The receiver can use any secret scalar point for $C_r$. The sender will need to verify that $C_r = a_r * B_{scan}$ and $A_r = a_r * G$ are using the same basepoint scalar ($a_r$).
+The receiver can use any secret scalar point for $C_r$. The sender will need to verify that $C_r = a_r B_{scan}$ and $A_r = a_r * G$ are using the same basepoint scalar ($a_r$).
 
 ### Proof generation
 
@@ -54,3 +57,30 @@ R_2' = sB_{scan} - eC_r = (k+ea_r)B_{scan} - eC_r = kB_{scan} + e (a_r B_{scan})
 $$
 
 $e' = H(R_1' || R_2') = e$
+
+## Silent payment tweaks in multi-party payjoins
+
+// TODO: demonstrate that the tweaks should not be using x-only keys and fail under some circumstances. Blinded $C_r$ should be fine to use x-only.
+
+The constraint is that no receiver wants to reveal the silent payments scan key to the other peers. The silent payment receivers will then post a blinded version of their scan key and peers will perform a blinded ECDH to create the aggregate tweak.
+
+First we assume that there exists some aggreement protocol where peers can aggree on the set of inputs in the session. After they sort and finalize the inputs adding outputs can be phased in.
+
+The silent payment scan key is then broadcasted as $B_{scan}' = B_{scan} + rG$ where $r$ is a random blinding factor.
+
+Individual peers then perform a blinded ECDH:
+$C_{i}' = a_{i} B_{scan}' = a_{i} (B_{scan} + rG) = a_{i} B_{scan} + a_{i} rG$
+$C' = \sum{ C_{i}'} = \sum{a_{i}} B_{scan}' = a_{tot} B_{scan}' = a_{tot} (B_{scan} + rG) = a_{tot} B_{scan} + a_{tot} rG$
+
+DLEQ proofs need to be provided for each $C_{i}'$ and $A_{i} = a_{i} G$ are using the same secret scalar ($a_{i}$).
+
+The peers who knows $B_{scan}$ will unblind each $C_{i}'$ by subtracting the blinding factor $rA_{tot}$ from $C'$.
+$C' - rA_{tot} = C' - a_{tot} rG = a_{tot} B_{scan} + a_{tot} rG - a_{tot} rG = a_{tot} B_{scan} = S$
+
+The silent payments tweaked key is then calculated like above and contributed as an output to multi-party session.
+
+Alternatively during output registration all p2tr outputs have blind dh curve points instead of their spending p2tr pubkey. And they are replaced after all the tweaks have been calculated.
+
+## Batched DLEQ proofs
+
+TODO

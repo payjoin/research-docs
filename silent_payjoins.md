@@ -83,4 +83,4 @@ Alternatively during output registration all p2tr outputs have blind dh curve po
 
 ## Batched DLEQ proofs
 
-TODO
+In the case that we have multiple silent payments outputs we need for each input we need to provide DLEQ proof for each tweak. In coinjoins with many outputs and inputs this can get cumbersome (n inputs, m outputs, nxm DLEQ proofs per session). A batched DLEQ proof would be beneficial here to cover all the tweaks for a $a_i$ at once.

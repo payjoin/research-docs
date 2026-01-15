@@ -1,3 +1,5 @@
+Basically, the idea is to use Bulletproofs-style techniques to prove knowledge of a specific vector Pedersen commitment, where the commitment gets computed from a \rho-weighted linear combination of U (new NUMS points), a_i x^i *G, and a_i x^i* P_i
+
 1. Problem Description
 Goal: Prove knowledge of a vector $\mathbf{a} \in \mathbb{Z}_q^n$ satisfying two lists of relations simultaneously:
 
@@ -8,7 +10,7 @@ Adversarial Keys: The generators $P_i$ are arbitrary and may depend on $G$ or ea
 
 Efficiency: Proof size $O(\log n)$; Verification time $O(n)$.
 
-2. Solution: Commit-and-Prove with Linear Aggregation
+1. Solution: Commit-and-Prove with Linear Aggregation
 We use a Commit-and-Prove strategy. We first bind the witness $\mathbf{a}$ to honest generators (independent of $P_i$), then aggregate the relations.
 
 Setup:
@@ -64,7 +66,7 @@ $\rho$-Test: The equation involves a polynomial in $\rho$ of degree 2. If the co
 
 $x$-Test: The aggregates are polynomials in $x$ of degree $n-1$. If any single $A_i \neq a_i G$ (or $B_i$), the aggregate equality would hold for at most $n-1$ values of $x$.
 
-4. Implementation Considerations
+1. Implementation Considerations
 Primitive Choice:
 
 Do not use "Standard Bulletproofs Inner Product" (Protocol 2). Use a "Compressed $\Sigma$-Protocol for Homomorphisms" (Attema-Cramer 2020) or a library feature explicitly labelled "Proof of MSM Opening".

@@ -83,4 +83,8 @@ Alternatively during output registration all p2tr outputs have blind dh curve po
 
 ## Batched DLEQ proofs
 
-In the case that we have multiple silent payments outputs we need for each input we need to provide DLEQ proof for each tweak. In coinjoins with many outputs and inputs this can get cumbersome (n inputs, m outputs, nxm DLEQ proofs per session). A batched DLEQ proof would be beneficial here to cover all the tweaks for a $a_i$ at once.
+In the case that we have multiple silent payments outputs for each input we need to provide DLEQ proof for each tweak. In coinjoins with many outputs and inputs this can get cumbersome (n inputs, m outputs, O(n * m) DLEQ proofs per session). In a coinjoin with many inputs (>100) this becomes non-trivial. A batched DLEQ proof would be beneficial here to cover all the tweaks for a $a_i$ at once.
+
+More concretly, we still have $A = a_i * G$ but now we have many $C$'s $C_i = B_{scan_{i}} a_i$. Can we cover DLEQ all $C_i$ in a single proof. 
+
+Relevant discussions: https://github.com/bitcoin/bips/pull/1687#discussion_r1847314644

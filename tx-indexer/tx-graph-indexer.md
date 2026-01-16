@@ -53,3 +53,8 @@ clusters.save("/path/to/clusters.bin").await?;
 Creating heuristics should be pluggable (similar to creating new indecies). Currently in blocksci there are limited options. You can add some custom filters to exsiting heuristics. Otherwise you have to create a new heuristic from scratch in CPP, re-compile, expose in FFI and then use it.
 
 How can we create a more flexible system where you can create new heuristics and they compose? This is an open question.
+
+## Other notes
+* Josie's project that uses the kernel to create a canon ordering of blocks_*.dat
+* Sebastian's python bindings for the kernel
+

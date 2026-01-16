@@ -1,6 +1,8 @@
 
 # Random Lottery mechanism
 
+https://gist.github.com/nothingmuch/f5b9a559958c6116606d9da0d4d884f2
+
 At a highlevel we are interested in randomizing our choice of which UTXOs to co-spend with to achieve better sybil resistance and promote a more robust tx graph structure.
 
 Note that there are other ways to achieve the contribute to the desired tx graph structure i.e low-hamming weight denominations. // TODO need notes on that

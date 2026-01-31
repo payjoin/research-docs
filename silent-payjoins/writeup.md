@@ -34,11 +34,13 @@ If the sender supports BIP-352 but not Payjoin, they simply broadcast a BIP-352 
 
 In BIP-352, the output key derives from a tweak computed via the ECDH shared secret between the input private keys and the receiver’s scan public key. In Payjoin, both sender and receiver contribute inputs, so they must collaboratively compute the shared secret because neither party controls all input private keys.
 
-The Silent Payment tweaked key is $P = B_{spend} + H(S) G$ where $S = a_{tot} * B_{scan} = b_{scan} * A_{tot}$ and $a_{tot}$ represents the sum of all input private keys. Let the sender keys be $a_s = \sum a_{si}$, the receiver keys be $a_r = \sum a_{ri}$, and the total keys in the finalized proposal be $a_{tot} = a_s + a_r$.
+The Silent Payment tweaked key is $P = B_{spend} + H(S) G$ where $S = a_{tot} B_{scan} = b_{scan} A_{tot}$ and $a_{tot}$ represents the sum of all input private keys. Let the sender keys be $a_s = \sum a_{si}$, the receiver keys be $a_r = \sum a_{ri}$, and the total keys in the finalized proposal be $a_{tot} = a_s + a_r$.
 
-The sender computes their ECDH contribution $C_s = a_s * B_{scan}$ and includes it under `PSBT_INPUT_SP_TWEAK` in the fallback PSBT. In the fallback case, $a_{tot} = a_s$ because the receiver has not added inputs. The receiver verifies correct BIP-352 output construction and caches the resulting txid to reduce on-chain scanning requirements (assuming they operate a node with `txindex=1`).
+The sender computes their ECDH contribution $C_s = a_s B_{scan}$ and includes it under `PSBT_INPUT_SP_TWEAK` in the fallback PSBT. In the fallback case, $a_{tot} = a_s$ because the receiver has not added inputs. The receiver verifies correct BIP-352 output construction and caches the resulting txid to reduce on-chain scanning requirements (assuming they operate a node with `txindex=1`).
 
-After receiving the proposal and adding inputs, the receiver computes their tweak contribution as $C_r = a_r * B_{scan}$. The receiver signs and returns the finalized proposal to the sender along with $C_r$ and a DLEQ proof demonstrating that $C_r = a_r * B_{scan}$ and $A_r = a_r * G$ share the same scalar $a_r$.
+After receiving the proposal and adding inputs, the receiver computes their tweak contribution as $C_r = a_r B_{scan}$. The receiver signs and returns the finalized proposal to the sender along with $C_r$ and a DLEQ proof demonstrating that $C_r = a_r B_{scan}$ and $A_r = a_r G$ share the same scalar $a_r$.
+
+The receiver calculates the mailbox id as the truncated hash of the $C_r$. In BIP-77 parlance this would be a short id.
 
 The sender verifies the DLEQ proof, recomputes the shared secret $S$, and derives the tweaked key $P'$.
 

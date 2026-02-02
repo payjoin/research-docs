@@ -83,8 +83,45 @@ Alternatively during output registration all p2tr outputs have blind dh curve po
 
 ## Batched DLEQ proofs
 
-In the case that we have multiple silent payments outputs for each input we need to provide DLEQ proof for each tweak. In coinjoins with many outputs and inputs this can get cumbersome (n inputs, m outputs, O(n * m) DLEQ proofs per session). In a coinjoin with many inputs (>100) this becomes non-trivial. A batched DLEQ proof would be beneficial here to cover all the tweaks for a $a_i$ at once.
+In the case that we have $m$ silent payments outputs each inputs needs to provide $m$ DLEQ proofs. In coinjoins with many outputs and inputs this can get cumbersome (n inputs, m outputs, O(n * m) DLEQ proofs per session). In a coinjoin with many inputs (>100) this becomes non-trivial. A batched DLEQ proof would be beneficial here to cover all the tweaks for a $a_i$ at once.
 
-More concretly, we still have $A = a_i * G$ but now we have many $C$'s $C_i = B_{scan_{i}} a_i$. Can we cover DLEQ all $C_i$ in a single proof. 
+More concretly, we still have $A = a_i * G$ but now we have many $C$'s $C_{ij} = B_{scan_{j}} a_i$. Can we cover DLEQ all $C_{ij}$ in a single proof.
 
-Relevant discussions: https://github.com/bitcoin/bips/pull/1687#discussion_r1847314644
+Relevant discussions: <https://github.com/bitcoin/bips/pull/1687#discussion_r1847314644>
+
+This is best described as a knowledge of exponent with a shared witness $a_i$ across many bases.
+Or a Sigma protocol with a single witness and many linear relationships.
+
+We can use a random linear combination mechanism similar to what is done in Musig and FROST.
+
+We keep the public key equation as is and aggregate the ECDH equations.
+Since each proof is specific to an input we can fix scalar.
+The first equation is: $A = a G$
+The second equation is: $C_i = B_i a$ where $B_i = B_{scan_{i}} + rG$ just written without scan and the blinding term for brevity.
+
+First we derive unpredictable coeffecients for each $B_i$ for $i \in M$
+$$
+\alpha_i = H(ctx, A, B_i, C_i, ... , B_n, C_n, i)
+$$
+
+Then we define
+$$
+B = \sum_{i} \alpha_i B_i
+\newline
+C = \sum_{i} \alpha_i C_i
+$$
+
+Our statement is then:
+$$
+\exists a \in \mathbb{Z}_q \text{ such that } A = aG \text{ and } C = aB
+$$
+
+The verifier samples a random nonce $k$ and commits to $R_G = kG$ and $R_B = kB$.
+
+Computes the challenge $e = H(ctx, A_i, B, C, R_G, R_B)$.
+and responds with $s = k + e a$
+The proof is then $\pi = (s, R_G, R_B, C)$.
+
+The verifier must check that:
+$sG = R_G + e A$
+$sB = R_B + e C$

@@ -40,10 +40,10 @@ In BIP-352, the output key derives from a tweak computed via the ECDH shared sec
 
 The Silent Payment tweaked key is $P = B_{spend} + H(S) G$ where $S = a_{tot} B_{scan} = b_{scan} A_{tot}$ and $a_{tot}$ represents the sum of all input private keys. Let the sender keys be $a_s$, the receiver keys be $a_r$, and the total keys in the finalized proposal be $a_{tot} = a_s + a_r$. And in the fallback case, $a_{tot} = a_s$ as the receiver has not added inputs.
 
-The sender computes their ECDH contribution $C_s = a_s B_{scan}$ and includes it under `PSBT_INPUT_SP_TWEAK` in the fallback PSBT. The receiver verifies correct BIP-352 output construction and caches the resulting txid to reduce on-chain scanning requirements -- asuming only segwit inputs are used.
+The receiver verifies correct BIP-352 output construction and caches the resulting txid to reduce on-chain scanning requirements -- asuming only segwit inputs are used.
 
-After receiving the proposal and adding inputs, the receiver computes their tweak contribution as $C_r = a_r B_{scan}$. The receiver signs and returns the finalized proposal to the sender along with $C_r$ and a DLEQ proof demonstrating that $C_r = a_r B_{scan}$ and $A_r = a_r G$ share the same scalar $a_r$.
-The receiver calculates the mailbox id as the truncated hash of the $C_s$. In BIP-77 parlance this would be a short id.
+The receiver contributes inputs of their own and computes their tweak contribution as $C_r = a_r B_{scan}$, and includes it under `PSBT_IN_SP_TWEAK_CONTRIBUTION` in the payjoin PSBT. The receiver signs and returns the finalized proposal to the sender along with $C_r$ and a DLEQ proof demonstrating that $C_r = a _r B_{scan}$ and $A_r = a_r G$ share the same scalar $a_r$. The proof would be included under `PSBT_IN_SP_DLEQ_PROOF`.
+The receiver calculates the response mailbox id as the truncated hash of the sender's reply key -- this is not different from the response mailbox id in BIP-77.
 
 The sender must verify the DLEQ proof, recompute the shared secret $S$ using the receiver's $C_r$, and derive the tweaked key $P'$.
 

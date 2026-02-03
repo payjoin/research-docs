@@ -31,7 +31,8 @@ The HPKE payload does not contain the proposal itself, but a pointer to the subd
 
 Anonymous credential-based rate limiting provides flood protection.
 
-This design does not require PIR. The directory can return the complete proposal set, and clients perform filtering locally.
+This design ignores PIR explicitly. The directory can return the complete proposal set, and clients perform filtering locally. But this is additional scanning on top of what sp receivers already need to do.
+This may be infeasible in practice.
 
 ## The fallback
 

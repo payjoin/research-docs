@@ -1,6 +1,11 @@
 # Reducing BIP-77 by one round of communication and improving UX with Silent Payments
 
-Async Payjoin (BIP-77) uses a scan-and-send interaction model. The sender scans the receiver’s BIP21 address, which encodes the store-and-forward server endpoint that the receiver monitors. This design enables asynchronous communication. However, the sender must request a fresh BIP21 address for every payment. This document specifies the changes required to support static Payjoin URIs using Silent Payments, referred to here as **SilentPayjoins**.
+Async Payjoin (BIP-77) uses a scan-and-send interaction model. The sender scans
+the receiver’s [Payjoin URI](https://github.com/bitcoin/bips/blob/master/bip-0077.md#payjoin-uri), which encodes the [mailbox endpoint](https://github.com/bitcoin/bips/blob/master/bip-0077.md#mailbox-endpoint) that
+the receiver polls. This design enables asynchronous communication. However,
+the sender must request a fresh Payjoin URI for every transaction. This document
+specifies the changes required to support static Payjoin URIs using Silent
+Payments, referred to here as **SilentPayjoins**.
 
 <!-- A sender capable of both Silent Payments and Payjoin with a compatible receiver (Cake wallet for example) must currently choose between two protocols. Typical users cannot reliably distinguish between these options or evaluate their tradeoffs. -->
 <!-- 
@@ -8,13 +13,13 @@ Both protocols should coexist. Payjoin can incorporate Silent Payments in a clea
 
 ## Static Payjoin URI
 
-The receiver encodes their scan key, spend key, and directory endpoint into a BIP21 URI. This construction yields a static Payjoin URI.
+The receiver encodes their scan key, spend key, and directory endpoint into a Payjoin URI. This construction yields a static Payjoin URI.
 
 Example BIP21: `bitcoin:sp1q...?&pj=https://directory.example.com`
 
 ## Changes to BIP77 Directory
 
-The directory must not learn the financial history of users who reuse a static Payjoin URI. In BIP-77 terminology, reusing the same subdirectory or mailbox introduces longitudinal privacy leakage.
+The directory must not learn the financial history of users who reuse a static Payjoin URI. In BIP-77 terminology, reusing the same mailbox introduces longitudinal privacy leakage.
 
 The BIP-77 directory should instead operate a rate-limited, expiring bulletin board for all SilentPayjoin proposals. A SilentPayjoin-capable client downloads the entire bulletin board and locally scans for proposals "addressed" to them. Silent Payjoin proposals are HPKE-encrypted using the same scan key associated with the static Payjoin URI. This process is anologous to how silent payments light clients scan the network for payments.
 

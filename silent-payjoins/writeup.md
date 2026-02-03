@@ -15,7 +15,7 @@ Both protocols should coexist. Payjoin can incorporate Silent Payments in a clea
 
 The receiver encodes their scan key, spend key, and directory endpoint into a Payjoin URI. This construction yields a static Payjoin URI.
 
-Example BIP21: `bitcoin:sp1q...?&pj=https://directory.example.com`
+Example BIP 321 Silent Payjoin URI: `bitcoin:?sp=sp1q...?&pj=https://directory.example.com`
 
 ## Changes to BIP77 Directory
 

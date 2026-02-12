@@ -125,3 +125,6 @@ The proof is then $\pi = (s, R_G, R_B, C)$.
 The verifier must check that:
 $sG = R_G + e A$
 $sB = R_B + e C$
+
+
+// TODO; this needs one more verification equation and has a soundness gap.

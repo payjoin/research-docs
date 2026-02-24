@@ -28,16 +28,16 @@ Our development timeline for multiparty Payjoin is as follows:
     - Armin is crates.io Author <https://github.com/arminsabouri/rust-wallet-fingerprints/>
 
 - 2025 Q4
-- [ ] Develop a library that allows wallets to create transactions with their most minimal transaction fragment components while still being able to reason about the wallet's cost function.
-- [ ] Define wallet optimization framework and cost function
- 	- Cost functions model the decision space available to Bitcoin wallets during transaction creation. Their primary goal is to account for user-defined liabilities, such as the loss of privacy and how these liabilities interact with confirmation times.
-- [ ] Define a coalition formation mechanism to allow participants to join and leave a multiparty transaction while maintaining privacy based on preferences like privacy, timeliness, and fees. The output of this is a write up intended for a  forum like Delving or the bitcoin dev mailing list.
+- [X] Develop a library that allows wallets to create transactions with their most minimal transaction fragment components while still being able to reason about the wallet's cost function.
+- [X] Define wallet optimization framework and cost function
+ 	- Cost functions model the decision space available to Bitcoin wallets during transaction creation. Their primary goal is to account for user-defined liabilities, such as the loss of privacy and how these liabilities interact with confirmation times. <https://github.com/payjoin/btsim> 
+- [X] Define a coalition formation mechanism to allow participants to join and leave a multiparty transaction while maintaining privacy based on preferences like privacy, timeliness, and fees. The output of this is a write up intended for a  forum like Delving or the bitcoin dev mailing list. <https://github.com/payjoin/multiparty-protocol-docs/pull/1/files>
  	- Take inspiration from JoinMarket's order book approach from a single taker to multiple takers per transaction <https://github.com/payjoin/research-docs/blob/main/research-milestones.md#3-coalition-formation-protocol>
-- [ ] Define a NIP and reference code that allows Nostr clients to use Nostr relays via an OHTTP interface.
- 	- [ ] Modify the BIP-77 Directory service to opt-in to using nostr relays for durable storage. As defined in <https://gist.github.com/arminsabouri/1d41501b4e5caa38870097f70ec0e604/>
+- [X] Define a NIP and reference code that allows Nostr clients to use Nostr relays via an OHTTP interface.
+ 	- [X] Modify the BIP-77 Directory service to opt-in to using nostr relays for durable storage. As defined in <https://gist.github.com/arminsabouri/1d41501b4e5caa38870097f70ec0e604/>
 
 - 2026 Q1:
-- [ ] Spec and Develop mutli party multi-stage payjoin in the semi-honest setting
+- [X] Spec mutli party payjoin in the semi-honest setting
 - [ ] Create a simulation framework for evaluating our assumption for the multiparty transaction structures
  	- <https://github.com/nothingmuch/fungi/tree/btsim>
   - Consider drafting Bitcoin Improvement Proposal or similar to specify open protocol within Payjoin Dev Kit
@@ -52,18 +52,23 @@ Our development timeline for multiparty Payjoin is as follows:
 
 Q2 2026:
 
-- [ ] Release transaction graph based privacy metrics in their own library integrated into the Payjoin Dev Kit
-  - [ ] Implement basic clustering heuristics and transaction graph indexing
+- [ ] Release transaction graph based privacy metrics in their own library
+  - [ ] Integrate into btsim 
+  - [X] Implement basic clustering heuristics
+  - [ ] Transaction graph indexing
   - [ ] Incorporate wallet fingerprinting
   - [ ] Define what privacy metrics to optimize for payjoin (v2 and multiparty)
   - [ ] Evaluate their efficacy
   - [ ] Optimize the v3 transaction structure
-  - [ ] Evaluate the privacy of 2-party and multiparty payjoins
+  - [ ] Evaluate the privacy of 2-party payjoins
+  - [ ] Evaluate the privacy of n-party payjoins
   - [ ] Develop additional case studies showcasing real-world application of the tool(s)
 - [ ] Nailing down details of the transport layer for v3 transactions
-  - [ ] Same for state machine replication
-- [ ] Design and implement a OHTTP interface for Esplora
-  - [ ] Spec and implement privacy preserving reads from electrum clients.
+  - [X] Semi honest
+  - [ ] BFT 
+  - [X] Same for state machine replication
+- [X] Design and implement a OHTTP interface for Esplora
+  - [ ] Spec and implement privacy preserving reads from electrum clients (Large Item)
 
 Q3-4 2026,
 

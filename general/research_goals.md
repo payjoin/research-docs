@@ -11,19 +11,18 @@ Payjoin V1 and V2 enable a sender and receiver to interact to batch transactions
 
 In contrast, a multiparty Payjoin protocol can coordinate transactions such that each participant maintains privacy even from a counterparty they send to or receive from.
 
-More over, we plan to design a coalition formation as a generalization of  traditional order matching by enabling multiple parties to aggregate their orders, allowing for mutually beneficial, positive-sum outcomes.
+More over, we plan to design a coalition formation as a generalization of traditional order matching by enabling multiple parties to aggregate their orders, allowing for mutually beneficial, positive-sum outcomes.
 
-We will measure the efficacy of the said protocol by building a suite of clustering software that will allow researchers and developers to measure the privacy of their transaction structure and subgraph. **Payjoin is designed to combat clustering, but recent results in clustering research call this in to question**.
+We will measure the efficacy of the said protocol by building a suite of clustering software that will allow researchers and developers to measure the privacy of their transaction structure and subgraph. Lastly, Payjoin is designed to combat clustering, but recent results in clustering research call this in to question.
 
 The protocol can be conceptualized as a two seperated phases:
 
 1. Find your peers (Coalition Formation)
-2. Coordinate your transaction (Transaction Coordination)
+2. Coordinate your transaction (Transaction Construction)
 
 ### Transaction Construction
 
-**What are some of the constraints**
-With `SIGHASH_ALL` all parties must sign the same transaction and then combine their signatures, or the transaction can't be broadcast on the bitcoin network. This means that all parties must come to agreement about what transaction to sign. If the total txout amount exceeds the total txin amount, the transaction will
+With `SIGHASH_ALL` all parties must sign the same transaction and then collect each other's witness, or the transaction can't be broadcast on the bitcoin network. This means that all parties must come to agreement about what transaction to sign. If the total txout amount exceeds the total txin amount, the transaction will
 not be valid. therefore addition of txouts must be restricted. Adding txout must be authorized, fair and accountable (wasabi solves this with keyed anonomous credentials and homomorphic value commitments) -- in the sense that txin funds must verifiably cover txout funds per user.
 
 Lastly, txouts must not be linkable by other parties in the transaction, so txout restriction can't rely on knowing which inputs are related to the input.
@@ -46,9 +45,7 @@ Lastly, latest work in Coinjoins only quantify privacy for a single transaction 
 
 ## Notes on Tx Graph structure
 
-The research direction is to treat on-chain privacy as an emergent property of **transaction-graph structure**, rather than as a per-transaction heuristic, and to analyze that structure using tools from random graphs, expanders, superconcentrators, and random walks. Dense transaction construction (e.g. radix CoinJoins) provides strong *local* ambiguity, while verifiable randomness in peer and coin selection induces *global* graph properties that drive rapid mixing and many plausible paths. Entropy captures the size of anonymity sets, but edge-differential-privacy–style parameters capture their **robustness** to information revelation; the open problem is interpreting these parameters meaningfully when the algorithm and data are fixed and ( \varepsilon ) must be estimated rather than chosen. Key open questions include how fragile large anonymity sets are under realistic edge deletions, how degree sequences evolve over time in the randomized subgraph, and how much information leaks through revealed preferences. Simulations can cover most of the empirical work: generating transaction graphs under different randomized selection rules, estimating degree distributions and path counts, measuring mixing times and stationary distributions, stress-testing edge removals and deanonymization events, and validating whether the resulting graphs behave like expanders or superconcentrators with high probability.
-
-
+The research direction is to treat on-chain privacy as an emergent property of **transaction-graph structure**, rather than as a per-transaction heuristic, and to analyze that structure using concepts from random graphs, expanders / superconcentrators, and random walks. Dense transaction construction (e.g. radix CoinJoins) provides strong *local* ambiguity, while verifiable randomness in peer and coin selection induces *global* graph properties that drive rapid mixing and many plausible paths. Entropy captures the size of anonymity sets, but edge-differential-privacy–style parameters capture their **robustness** to information revelation; the open problem is interpreting these parameters meaningfully when the algorithm and data are fixed and ( \varepsilon ) must be estimated rather than chosen. Key open questions include how fragile large anonymity sets are under realistic edge deletions, how degree sequences evolve over time in the randomized subgraph, and how much information leaks through revealed preferences. Simulations can cover most of the empirical work: generating transaction graphs under different randomized selection rules, estimating degree distributions and path counts, measuring mixing times and stationary distributions, stress-testing edge removals and deanonymization events, and validating whether the resulting graphs behave like expanders or superconcentrators with high probability.
 
 ## Tangential Research
 

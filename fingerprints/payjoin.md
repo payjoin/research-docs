@@ -2,7 +2,7 @@
 
 Every wallet is a piece of software with habits, and habits leave fingerprints. When a wallet constructs a transaction it makes dozens of small decisions: input ordering, locktime value, coin selection strategy, fee rate, signature encoding. These choices vary systematically across implementations -- Bitcoin Core behaves differently from Trezor, which behaves differently from Ledger. Some wallets have bugs that manifest as fingerprints.
 
-Some signals are deterministic: Bitcoin Core grinds all ECDSA signatures to a short r-value (low-R), so a single 72-byte signature immediately eliminates Core as the signer. Others are probabilistic: fee rates follow characteristic distributions per wallet. Either way, each observable dimension contributes an independent piece of evidence that accumulates additively in log-space via the log-likelihood ratio.
+Some signals are deterministic: Bitcoin Core grinds all ECDSA signatures to a short r-value (low-R), so [a single 72-byte signature immediately eliminates Core as the signer](https://b10c.me/blog/006-evolution-of-the-bitcoin-signature-length/#der-encoded-ecdsa-signatures). Others are probabilistic: fee rates follow characteristic distributions per wallet. Either way, each observable dimension contributes an independent piece of evidence that accumulates additively in log-space via the log-likelihood ratio.
 
 ## Intra vs. Inter: Two Levels of Linkage
 
@@ -10,7 +10,7 @@ Some signals are deterministic: Bitcoin Core grinds all ECDSA signatures to a sh
 
 **Inter-transaction** signals operate across the transaction graph.
 
-PayJoins sit at the intersection of both levels. The transaction is designed to defeat the common-input-ownership heuristic by having two parties contribute inputs and for the tx to be indistinguishable from a "normal tx". But defeating CIOH at the transaction level does not defeat fingerprinting at the input level and anything that signals collaborative construction allows a chain analyst to detect a collaboration, partition its inputs by party, and apply standard heuristics to each partition independently.
+PayJoins sit at the intersection of both levels. A canonical payjoin transaction is designed to defeat the common-input-ownership heuristic by having two parties contribute inputs and for the tx to be indistinguishable from a "normal tx". But defeating CIOH at the transaction level does not defeat fingerprinting at the input level and anything that signals collaborative construction allows a chain analyst to detect a collaboration, partition its inputs by party, and apply standard heuristics to each partition independently.
 
 The goal of chain analysis against a PayJoin is therefore: (1) detect the collaborative transaction, (2) recover the sender/receiver input partition, (3) apply standard heuristics within each partition. Wallet fingerprints and collaboration artifacts like UIH are exactly the signals that enable step 2.
 

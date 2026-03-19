@@ -1,4 +1,4 @@
-# Reducing BIP-77 by one round of communication and improving UX with Silent Payments
+# Reducing BIP-77 by one round of communication with Silent Payments
 
 Async Payjoin (BIP-77) uses a scan-and-send interaction model. The sender scans
 the receiver’s [Payjoin URI](https://github.com/bitcoin/bips/blob/master/bip-0077.md#payjoin-uri), which encodes the [mailbox endpoint](https://github.com/bitcoin/bips/blob/master/bip-0077.md#mailbox-endpoint) that
@@ -48,7 +48,7 @@ The Silent Payment tweaked key is $P = B_{spend} + H(S) G$ where $S = a_{tot} B_
 
 The receiver verifies correct BIP-352 output construction and caches the resulting txid to reduce on-chain scanning requirements -- asuming only segwit inputs are used.
 
-The receiver contributes inputs of their own and computes their tweak contribution as $C_r = a_r B_{scan}$, and includes it under `PSBT_IN_SP_TWEAK_CONTRIBUTION` in the payjoin PSBT. The receiver signs and returns the finalized proposal to the sender along with $C_r$ and a DLEQ proof demonstrating that $C_r = a _r B_{scan}$ and $A_r = a_r G$ share the same scalar $a_r$. The proof would be included under `PSBT_IN_SP_DLEQ_PROOF`.
+The receiver contributes inputs of their own and computes their tweak contribution as $C_r = a_r B_{scan}$, and includes it under `PSBT_IN_SP_TWEAK_CONTRIBUTION` in the payjoin PSBT. The receiver signs and returns the finalized proposal to the sender along with $C_r$ and a DLEQ proof demonstrating that $C_r = a_r B_{scan}$ and $A_r = a_r G$ share the same scalar $a_r$. The proof would be included under `PSBT_IN_SP_DLEQ_PROOF`.
 The receiver calculates the response mailbox id as the truncated hash of the sender's reply key -- this is not different from the response mailbox id in BIP-77.
 
 The sender must verify the DLEQ proof, recompute the shared secret $S$ using the receiver's $C_r$, and derive the tweaked key $P'$.
@@ -58,3 +58,6 @@ C_s + C_r = (a_s B_{scan}) + (a_r B_{scan}) = (a_s + a_r) B_{scan} = a_{tot}  B_
 $$
 
 If all verifications succeed, the sender signs and broadcasts the collaborative transaction.
+
+
+If you have any questions or feedback, please reach out to me me@arminsabouri.com.
